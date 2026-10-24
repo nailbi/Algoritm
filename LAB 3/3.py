@@ -42,30 +42,25 @@ def insertion_sort(a):
     return a
 
 
-def quick_sort(a, low=0, high=None):
-    if high is None:
-        high = len(a) - 1
-    while low < high:
-       
-        pivot = a[(low + high) // 2]
-        i, j = low, high
-        while i <= j:
-            while a[i] < pivot:
-                i += 1
-            while a[j] > pivot:
-                j -= 1
-            if i <= j:
-                a[i], a[j] = a[j], a[i]
-                i += 1
-                j -= 1
-        
-        if j - low < high - i:
-            quick_sort(a, low, j)
-            low = i
+def QuckSort(a):
+    if len(a) <= 1:
+        return a
+    left = []
+    right = []
+    middle = []
+    median = a[0] + a[-1] + a[len(a)//2] - max(a[0], a[-1], a[len(a)//2]) - min(a[0], a[-1], a[len(a)//2])
+    if median == a[0]:
+        a[0], a[len(a) // 2] = a[len(a) // 2], a[0]
+    elif median == a[-1]:
+        a[-1], a[len(a) // 2] = a[len(a) // 2], a[-1]
+    for i in range(0, len(a)):
+        if a[i] < median:
+            left.append(a[i])
+        elif a[i] > median:
+            right.append(a[i])
         else:
-            quick_sort(a, i, high)
-            high = j
-    return a
+            middle.append(a[i])
+    return QuckSort(left) + middle + QuckSort(right)
 
 
 def merge_sort(a):
@@ -97,7 +92,7 @@ def main():
         ("Пузырьковая", bubble_sort),
         ("Выбором", selection_sort),
         ("Вставками", insertion_sort),
-        ("Быстрая", quick_sort),
+        ("Быстрая", QuckSort),
         ("Слиянием", merge_sort),
     ]
 

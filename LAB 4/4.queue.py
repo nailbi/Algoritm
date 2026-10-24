@@ -53,8 +53,40 @@ class Queue:
         return self._size
 
 
+class ReverseQueue:
+    # противоположно направленная очередь: элементы встают в голову,
+    # поэтому первым выходит последний добавленный
+
+    def __init__(self):
+        self._head = None
+        self._size = 0
+
+    def enqueue(self, value):
+        self._head = Node(value, self._head)
+        self._size += 1
+
+    def dequeue(self):
+        if self.is_empty():
+            raise IndexError("dequeue из пустой очереди")
+        value = self._head.value
+        self._head = self._head.next
+        self._size -= 1
+        return value
+
+    def peek(self):
+        if self.is_empty():
+            raise IndexError("peek пустой очереди")
+        return self._head.value
+
+    def is_empty(self):
+        return self._head is None
+
+    def __len__(self):
+        return self._size
+
+
 def check_with_queue(s):
-   
+    # основная очередь хранит скобки строки, обратная — открытые скобки
     brackets = only_brackets(s)
     if not brackets:
         return None
@@ -63,23 +95,15 @@ def check_with_queue(s):
     for ch in brackets:
         queue.enqueue(ch)
 
-    changed = True
-    while not queue.is_empty() and changed:
-        changed = False
-        prev = None
-        for _ in range(len(queue)):
-            cur = queue.dequeue()
-            if prev is not None and cur in CLOSE and PAIRS[cur] == prev:
-                prev = None
-                changed = True
-            else:
-                if prev is not None:
-                    queue.enqueue(prev)
-                prev = cur
-        if prev is not None:
-            queue.enqueue(prev)
+    opened = ReverseQueue()
+    while not queue.is_empty():
+        ch = queue.dequeue()
+        if ch in OPEN:
+            opened.enqueue(ch)
+        elif opened.is_empty() or opened.dequeue() != PAIRS[ch]:
+            return False
 
-    return queue.is_empty()
+    return opened.is_empty()
 
 
 def result(ok):
